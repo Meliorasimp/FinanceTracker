@@ -1,0 +1,5 @@
+.bg-backgroundImagetwo {
+    background: linear-gradient(to right bottom, rgba(64, 64, 64, 0.8), rgba(192, 192, 192, 0.8));
+    background-size: cover;
+    background-position: center;
+}
