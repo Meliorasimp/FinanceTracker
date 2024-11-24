@@ -1,5 +1,6 @@
 import { createUser, loginUser } from '../controllers/usercontroller.js';
 import express from 'express';
+import { authuser } from '../middleware/auth.js';
 const router = express.Router();
 
 router.post('/register', createUser);

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useExpenseStore } from '../store';
 import { useIncomeStore } from '../store';
+import { SubtractExpenseFromIncome, CalculateTotalIncome } from '../Services/MainService';
 import { Chart, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend } from 'chart.js';
 
 Chart.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
@@ -9,35 +10,39 @@ Chart.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Too
 const LineChart = () => {
   const [data, setData] = useState({ datasets: [], labels: [] });
   const { expenses } = useExpenseStore();
-  const { income } = useIncomeStore();
+  const { incomes } = useIncomeStore();
 
   useEffect(() => {
+    
+   
+    const totalincome = CalculateTotalIncome(incomes);
+    const totalnetincome = SubtractExpenseFromIncome(totalincome, expenses);
+    console.log('Total Net Income:', totalnetincome);
 
     const labels = expenses.map((_, index) => `item-${index + 1}`);
     const dataset1 = expenses.map(expense => expense.amount);
-    console.log("dataset1", dataset1);
-    const dataset2 = income => income.map(income => income.amount);
+    const dataset2 = totalnetincome;
 
     setData({
       labels,
       datasets: [
         {
-          label: 'Dataset 1',
+          label: 'Expenses',
           data: dataset1,
           borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          backgroundColor: 'rgba(75, 192, 192, 0.1)',
           fill: true,
         },
         {
-          label: 'Dataset 2',
+          label: 'Net Income',
           data: dataset2,
           borderColor: 'rgba(255, 99, 132, 1)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          backgroundColor: 'rgba(255, 99, 132, 0.1)',
           fill: true,
         },
       ],
     });
-  }, []);
+  }, [expenses, incomes]);
 
   const options = {
     responsive: true,
@@ -51,13 +56,12 @@ const LineChart = () => {
             size: 14,
             family: 'Arial',
           },
-          color: 'black',
+          color: 'white',
         },
       },
       tooltip: {
         callbacks: {
           title: (tooltipItems) => {
-            // Show the label in the tooltip
             return tooltipItems[0].label;
           },
         },
@@ -67,8 +71,7 @@ const LineChart = () => {
       x: {
         title: {
           display: true,
-          text: 'X Axis Title',
-          color: 'black',
+          color: 'lightgreen',
           font: {
             size: 16,
             family: 'Arial',
@@ -79,14 +82,14 @@ const LineChart = () => {
           color: 'rgba(0, 0, 0, 0.2)',
         },
         ticks: {
-          color: 'black',
+          color: 'lightgreen',
         },
       },
       y: {
         title: {
           display: true,
-          text: 'Y Axis Title',
-          color: 'black',
+          text: 'Amount',
+          color: 'lightgreen',
           font: {
             size: 16,
             family: 'Arial',
@@ -97,7 +100,7 @@ const LineChart = () => {
           color: 'rgba(0, 0, 0, 0.2)',
         },
         ticks: {
-          color: 'black',
+          color: 'white',
           callback: function(value, index, values) {
             return '$' + value;
           },
