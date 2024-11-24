@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  faBowlFood, faSave } from '@fortawesome/free-solid-svg-icons';
-import { truncateText, SubtractExpenseFromIncome, CalculateTotalIncome } from '../Services/MainService';
+import { truncateText, SubtractExpenseFromIncome, CalculateTotalIncome, ConvertToPHDate } from '../Services/MainService';
 import '../bg-backgroundimage.css'; 
 import '../overflow.css';
 import Expense from '../components/Expense';
@@ -12,7 +12,7 @@ import Update from '../components/Update';
 import DataSets from '../components/DataSets';
 import Income from '../components/Income';
 import DataSetsTwo from '../components/DataSetsTwo';
-import { PhilippinePeso } from 'lucide-react';
+import { PhilippinePeso, Plus, ChartArea, HandCoins, LogOut } from 'lucide-react';
 
 
 
@@ -28,6 +28,8 @@ function Navbar() {
   const { expenses, setExpense, deleteExpense } = useExpenseStore();
   const { setIncome, incomes } = useIncomeStore();
 
+  const date = new Date();
+
   const handleAddIncomeClick = () => {
     setIsAddIncomeVisible(!isAddIncomeVisible);
   }
@@ -35,12 +37,6 @@ function Navbar() {
   const handleExpenseclick = () => {
     setIsVisible(!isVisible);
   }
-
-  const totalincome = CalculateTotalIncome(incomes);
-  console.log('Total Income:', totalincome);
-  const nexpensearray = SubtractExpenseFromIncome(totalincome, expenses);
-  console.log('Net Income:', nexpensearray);
-  
 
   const handleDeleteModalClick = (id, name) => {
     console.log('Delete modal clicked:', id);
@@ -63,8 +59,7 @@ function Navbar() {
   }
 
   useEffect(() => { 
-    const totalNetIncome = SubtractExpenseFromIncome(incomes, expenses);
-    console.log('Net Income:', totalNetIncome);
+  
     const fetchExpenses = async () => {
       try {
         const response = await axios.get('http://localhost:3000/dashboard/expense');
@@ -117,23 +112,24 @@ function Navbar() {
             </div>
             <ul className="w-full">
                 
-              <li className="mb-4">
-                <a className="block py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 cursor-pointer" onClick={handleExpenseclick}>Add Expense</a>
+              <li className="mb-4 flex flex-row">
+                <a className=" py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 cursor-pointer flex flex-row items-center gap-2" onClick={handleExpenseclick}> <Plus size={36} />Add Expense</a>
                 {isVisible && <Expense onClose={handleExpenseclick} onSubmit={() => {
                   handleExpenseclick();
                 }}/>}
+                
               </li>
               <li className="mb-4">
-                <a href="/" className="block py-2 px-2 rounded hover:bg-slate-600 text-yellow-300">Allocate Budget</a>
+                <a href="/" className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 flex flex-row gap-2 items-center"><ChartArea size={36}/>Full Analytics</a>
               </li>
               <li className="mb-4">
-                <a onClick={handleAddIncomeClick} className="block py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 cursor-pointer">Add Income</a>
+                <a onClick={handleAddIncomeClick} className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 cursor-pointer flex flex-row items-center gap-2"><HandCoins size={36} />Add Income</a>
                 {
                   isAddIncomeVisible && <Income onCancel={handleAddIncomeClick} />
                 }
               </li>
               <li className="mb-4">
-                <a href="/logout" className="block py-2 px-2 rounded hover:bg-slate-600 text-yellow-300">Logout</a>
+                <a href="/logout" className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 flex flex-row gap-2 items-center"><LogOut size={32} />Logout</a>
               </li>
             </ul>
           </div>
@@ -141,25 +137,28 @@ function Navbar() {
       </aside>
       <div className="grid grid-cols-12 grid-rows-12 gap-4 ml-44 w-full h-screen"> 
         <div className="bg-gradient-to-br from-gray-600 to-gray-700 mt-20 p-2 rounded shadow-2xl row-start-1 row-span-7 col-start-1 col-span-5 border-4 border-transparent hover:border-green-600">
-            <h1 className='text-xl font-bold'>Expenses Made by Category</h1>
+            <h1 className='text-left text-base p-0 m-0 box-border'>Expenses Made by Category</h1>
             <div className='flex justify-center items-center h-full w-full'>
             <DataSets />  
           </div>
         </div> 
         <div className="xl:bg-gradient-to-br from-gray-600 to-gray-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-1 col-span-5 mb-2 border-4 border-transparent hover:border-green-600 relative sm:text-xs">
-           <h1 className='text-xl font-bold'>Income and Expense</h1>
+          <div className='flex justify-between'>
+           <h1 className='text-left text-base p-0 m-0 box-border'>Income and Expense</h1>
+           <h1 className='text-left text-base font-bold p-0 m-0 box-border text-yellow-400'>{ConvertToPHDate(date)}</h1>
+           </div>
            <div className='flex justify-center items-center h-full w-full'>
             <DataSetsTwo />
            </div>
         </div> 
-        <div className='bg-gradient-to-br from-gray-600 to-gray-700 p-2 pt-2 rounded shadow-xl row-start-1 row-span-7 col-start-6 col-span-6 mr-16 mt-20 border-4 border-transparent hover:border-purple-500'>
-            <h1 className='text-center font-bold text-xl'>Recent Transactions</h1>
+        <div className='bg-gradient-to-br from-gray-600 to-gray-700 p-2 pt-2 rounded shadow-xl row-start-1 row-span-7 col-start-6 col-span-6 mr-16 mt-20 border-4 border-transparent hover:border-green-600 relative sm:text-xs'>
+            <h1 className='text-left text-base p-0 m-0 box-border'>Recent Transactions</h1>
             <div className='flex justify-between items-center p-2'></div>
             <ul>
               {expenses.map((item) => (
                 <div key={item._id} className='flex group flex-row justify-between text-base border-b p-2 hover:bg-gray-900 hover:bg-opacity-50 relative'>
                   <li className='text-green-400 line-clamp-1' >{truncateText(item.expensename, 15)}</li>
-                    <li className='text-red-400 '>-{item.amount}</li>
+                  <li className='text-red-400 '>-{item.amount}</li>
                   <li>{truncateText(item.category, 15)}</li>
                   <li className='font-extralight'>{ConvertToPHDate(item.createdAt)}</li>
                   <div className='absolute hidden group-hover:flex items-center justify-end top-0 right-10 left-0 bottom-0 bg-gradient-to-r from-gray-500 to-gray-600 w-full h-full pr-5 gap-10'>
@@ -184,7 +183,6 @@ function Navbar() {
         </div>
         <div className='bg-gradient-to-br from-orange-600 to-orange-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-6 col-span-3 mb-2 border-4 border-transparent hover:border-blue-500'>
             <h1 className='text-center font-bold'><FontAwesomeIcon icon={faBowlFood } className='mr-2' />Foods and Groceries</h1>
-            <p>{totalincome}</p>
         </div>
         <div className='bg-gradient-to-br from-green-600 to-green-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-9 col-span-3 mr-16 mb-2 border-4 border-transparent hover:border-red-500'>
             <h1 className='text-center font-bold'><FontAwesomeIcon icon={ faSave } className='mr-2' />Saving and Debt Repayment</h1>

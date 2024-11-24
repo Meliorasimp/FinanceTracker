@@ -67,14 +67,19 @@ export const CalculateTotalIncome = (incomes) => {
 
 export const SubtractExpenseFromIncome = (totalIncome, expenses) => {
   const result = [];
-  // Initialize with the first value
+
   let previousValue = totalIncome;
 
   for (let i = 0; i < expenses.length; i++) {
     const currentValue = previousValue - expenses[i].amount;
     result.push(currentValue);
-    previousValue = currentValue; // Update previous value for the next iteration
+    previousValue = currentValue; 
   }
 
   return result;
+};
+
+export const ConvertToPHDate = (date = new Date()) => {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return new Date(date).toLocaleDateString('en-PH', options);
 };
