@@ -65,25 +65,16 @@ export const CalculateTotalIncome = (incomes) => {
   return total;
 }
 
-export const SubtracExpenseFromIncome = (incomes, expenses) => {
-  let totalIncome = CalculateTotalIncome(incomes);
-  let totalExpense = CalculateTotalExpense(expenses);
-  return totalIncome - totalExpense;
-}
+export const SubtractExpenseFromIncome = (totalIncome, expenses) => {
+  const result = [];
+  // Initialize with the first value
+  let previousValue = totalIncome;
 
-export const getCurrentDayInPH = () => {
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const today = new Date();
-  const options = { weekday: 'long', timeZone: 'Asia/Manila' };
-  const CurrentDay = today.toLocaleDateString('en-PH', options);
-
-  const CurrentDayIndex = daysOfWeek.indexOf(CurrentDay);
-
-  const orderedDaysOfWeek = [];
-
-  for (let i = 0; i < daysOfWeek.length; i++) {
-    orderedDaysOfWeek.push(daysOfWeek[(CurrentDayIndex + i) % daysOfWeek.length]);
+  for (let i = 0; i < expenses.length; i++) {
+    const currentValue = previousValue - expenses[i].amount;
+    result.push(currentValue);
+    previousValue = currentValue; // Update previous value for the next iteration
   }
 
-  return orderedDaysOfWeek;
-}
+  return result;
+};

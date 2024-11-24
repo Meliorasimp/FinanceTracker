@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  faBowlFood, faSave } from '@fortawesome/free-solid-svg-icons';
-import { truncateText, CalculateTransportationCategory } from '../Services/MainService';
+import { truncateText, SubtractExpenseFromIncome, CalculateTotalIncome } from '../Services/MainService';
 import '../bg-backgroundimage.css'; 
 import '../overflow.css';
 import Expense from '../components/Expense';
@@ -26,7 +26,7 @@ function Navbar() {
   const [selectedExpenseId, setSelectedExpenseId] = React.useState(null);
   const [selectedExpenseName, setSelectedExpenseName] = React.useState(null);
   const { expenses, setExpense, deleteExpense } = useExpenseStore();
-  const { setIncome } = useIncomeStore();
+  const { setIncome, incomes } = useIncomeStore();
 
   const handleAddIncomeClick = () => {
     setIsAddIncomeVisible(!isAddIncomeVisible);
@@ -35,6 +35,12 @@ function Navbar() {
   const handleExpenseclick = () => {
     setIsVisible(!isVisible);
   }
+
+  const totalincome = CalculateTotalIncome(incomes);
+  console.log('Total Income:', totalincome);
+  const nexpensearray = SubtractExpenseFromIncome(totalincome, expenses);
+  console.log('Net Income:', nexpensearray);
+  
 
   const handleDeleteModalClick = (id, name) => {
     console.log('Delete modal clicked:', id);
@@ -57,6 +63,8 @@ function Navbar() {
   }
 
   useEffect(() => { 
+    const totalNetIncome = SubtractExpenseFromIncome(incomes, expenses);
+    console.log('Net Income:', totalNetIncome);
     const fetchExpenses = async () => {
       try {
         const response = await axios.get('http://localhost:3000/dashboard/expense');
@@ -176,6 +184,7 @@ function Navbar() {
         </div>
         <div className='bg-gradient-to-br from-orange-600 to-orange-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-6 col-span-3 mb-2 border-4 border-transparent hover:border-blue-500'>
             <h1 className='text-center font-bold'><FontAwesomeIcon icon={faBowlFood } className='mr-2' />Foods and Groceries</h1>
+            <p>{totalincome}</p>
         </div>
         <div className='bg-gradient-to-br from-green-600 to-green-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-9 col-span-3 mr-16 mb-2 border-4 border-transparent hover:border-red-500'>
             <h1 className='text-center font-bold'><FontAwesomeIcon icon={ faSave } className='mr-2' />Saving and Debt Repayment</h1>
