@@ -16,13 +16,14 @@ const LineChart = () => {
     
    
     const totalincome = CalculateTotalIncome(incomes);
-    const totalnetincome = SubtractExpenseFromIncome(totalincome, expenses);
-    console.log('Total Net Income:', totalnetincome);
+    const recentTransactionFilter = expenses.filter((item) => item.category !== 'Recurring Transactions');
+    const totalnetincome = SubtractExpenseFromIncome(totalincome, recentTransactionFilter);
 
-    const labels = expenses.map((_, index) => `item-${index + 1}`);
-    const dataset1 = expenses.map(expense => expense.amount);
+    console.log('mydata:' ,recentTransactionFilter);
+    const labels = recentTransactionFilter.map((_, index) => `item-${index + 1}`);
+    const dataset1 = recentTransactionFilter.map(expense => expense.amount);
     const dataset2 = totalnetincome;
-
+    
     setData({
       labels,
       datasets: [

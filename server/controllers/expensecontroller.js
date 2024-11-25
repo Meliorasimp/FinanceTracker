@@ -1,7 +1,7 @@
 import { mongoose } from 'mongoose';
 import expensemodel from '../model/expensemodel.js';
 export const addExpense = async (req, res) => {
-    const { expensename, category, amount } = req.body;
+    const { expensename, category, amount, expenseDate } = req.body;
 
     try {
         if(!expensename || !amount) {
@@ -12,7 +12,7 @@ export const addExpense = async (req, res) => {
             return res.status(400).json({ message: 'Amount is too high.' });
         }
 
-        const newexpense = new expensemodel({ expensename, category, amount });
+        const newexpense = new expensemodel({ expensename, category, amount, expenseDate: expenseDate || new Date() });
         await newexpense.save();
         res.status(201).json({ message: 'Expense added successfully.', newexpense });
     }
