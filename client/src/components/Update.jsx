@@ -74,6 +74,7 @@ const Update = ({ onConfirm, onCancel, isVisible, id, name}) => {
           <option value="Transportation">Transportation</option>
           <option value="Foods and Groceries">Foods and Groceries</option>
           <option value="Savings and Debt Repayment">Savings and Debt Repayment</option>
+          <option value="Recurring Transactions">Recurring Transactions</option>
         </select>
         <input 
           type="number" 

@@ -8,7 +8,18 @@ const ExpenseModal = ({ onClose }) => {
   const [expensename, setExpenseName] = React.useState('');
   const [category, setCategory] = React.useState('Housing and Utilities');
   const [amount, setAmount] = React.useState('');
+  const [date, setDate] = React.useState(new Date().toISOString().split('T')[0]);
+  const [isRecurring, setIsRecurring] = React.useState(false);
   const { addExpense } = useExpenseStore();
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    if(e.target.value === 'Recurring Transactions') {
+      setIsRecurring(true);
+    } else {
+      setIsRecurring(false);
+    }
+  }
 
   const handleExpenseSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +29,8 @@ const ExpenseModal = ({ onClose }) => {
         { 
           expensename: expensename, 
           category: category, 
-          amount: amount 
+          amount: amount ,
+          expenseDate: isRecurring ? date : new Date(),
         },{
           headers: {
             'Content-Type': 'application/json',
@@ -58,14 +70,23 @@ const ExpenseModal = ({ onClose }) => {
             id="category" 
             className='block border-2 border-gray-300 p-2 w-80 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent'
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={handleCategoryChange}
             required
           >
             <option value="Housing and Utilities">Housing and Utilities</option>
             <option value="Transportation">Transportation</option>
             <option value="Foods and Groceries">Foods and Groceries</option>
             <option value="Savings and Debt Repayment">Savings and Debt Repayment</option>
+            <option value="Recurring Transactions">Recurring Transaction</option>
           </select>
+          {isRecurring && (
+            <input 
+              type="date" 
+              className='block border-2 border-gray-300 p-2 w-80 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent'
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          )}
           <input 
             type="number" 
             className='block border-2 border-gray-300 p-2 w-80 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent'

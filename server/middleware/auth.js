@@ -19,7 +19,7 @@ export const authuser = async (req, res, next) => {
         if (!user) {
             return res.status(401).send({ error: 'User not found' });
         }
-
+        
         req.token = token;
         req.user = user;
         next();

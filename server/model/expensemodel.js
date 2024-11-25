@@ -15,12 +15,17 @@ const expenseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+
+    expenseDate: {  
+        type: Date,
     }
 });
 
-const expensemodel = new mongoose.model('expense', expenseSchema);
+const expensemodel = mongoose.model('Expense', expenseSchema);  // Updated 'expense' to 'Expense' for model naming consistency
 
 export default expensemodel;

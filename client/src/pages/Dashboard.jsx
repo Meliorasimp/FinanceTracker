@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  faBowlFood, faSave } from '@fortawesome/free-solid-svg-icons';
-import { truncateText, SubtractExpenseFromIncome, CalculateTotalIncome, ConvertToPHDate } from '../Services/MainService';
+import { truncateText, ConvertToPHDate } from '../Services/MainService';
 import '../bg-backgroundimage.css'; 
 import '../overflow.css';
 import Expense from '../components/Expense';
@@ -12,7 +12,7 @@ import Update from '../components/Update';
 import DataSets from '../components/DataSets';
 import Income from '../components/Income';
 import DataSetsTwo from '../components/DataSetsTwo';
-import { PhilippinePeso, Plus, ChartArea, HandCoins, LogOut } from 'lucide-react';
+import { Plus, ChartArea, HandCoins, LogOut } from 'lucide-react';
 
 
 
@@ -25,10 +25,17 @@ function Navbar() {
   const [userdata, setUserData] = React.useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = React.useState(null);
   const [selectedExpenseName, setSelectedExpenseName] = React.useState(null);
-  const { expenses, setExpense, deleteExpense } = useExpenseStore();
+  const { expenses, setExpense } = useExpenseStore();
   const { setIncome, incomes } = useIncomeStore();
 
   const date = new Date();
+ 
+  console.log('Date:', date.getDate());
+
+  const recurringTransactionFilter = expenses.filter((item) => item.category === 'Recurring Transactions');
+  const recentTransactionFilter = expenses.filter((item) => item.category !== 'Recurring Transactions');
+  console.log('Recurring Transactions:', recurringTransactionFilter);
+
 
   const handleAddIncomeClick = () => {
     setIsAddIncomeVisible(!isAddIncomeVisible);
@@ -39,16 +46,12 @@ function Navbar() {
   }
 
   const handleDeleteModalClick = (id, name) => {
-    console.log('Delete modal clicked:', id);
-    console.log('Expense Name clicked:', name);
     setIsDeleteModalVisible(!isDeleteModalVisible);
     setSelectedExpenseId(id);
     setSelectedExpenseName(name)
   }
 
   const handleEditModalClick = (id, name, amount, category) => {
-    console.log('Edit modal clicked:', id);
-    console.log('Expense Info:', name, amount, category);
     setIsEditModalVisible(!isEditmodalVisible);
     setSelectedExpenseId(id);
   }
@@ -74,7 +77,6 @@ function Navbar() {
     const fetchIncomeData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/dashboard/income');
-        console.log('Income:', response.data.income);
         setIncome(response.data.income);
       }
       catch (error) {
@@ -85,7 +87,6 @@ function Navbar() {
     const fetchUserData = async () => {
       try {
         const userdata = localStorage.getItem('userinfo'); 
-        console.log("Retrieved Data:", userdata);
         if (userdata) { 
         setUserData(JSON.parse(userdata)); 
        }
@@ -155,7 +156,7 @@ function Navbar() {
             <h1 className='text-left text-base p-0 m-0 box-border'>Recent Transactions</h1>
             <div className='flex justify-between items-center p-2'></div>
             <ul>
-              {expenses.map((item) => (
+              {recentTransactionFilter.map((item) => (
                 <div key={item._id} className='flex group flex-row justify-between text-base border-b p-2 hover:bg-gray-900 hover:bg-opacity-50 relative'>
                   <li className='text-green-400 line-clamp-1' >{truncateText(item.expensename, 15)}</li>
                   <li className='text-red-400 '>-{item.amount}</li>
@@ -181,8 +182,36 @@ function Navbar() {
               ))}
             </ul>
         </div>
-        <div className='bg-gradient-to-br from-orange-600 to-orange-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-6 col-span-3 mb-2 border-4 border-transparent hover:border-blue-500'>
-            <h1 className='text-center font-bold'><FontAwesomeIcon icon={faBowlFood } className='mr-2' />Foods and Groceries</h1>
+        <div className='bg-gradient-to-br from-gray-600 to-gray-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-6 col-span-3 mb-2 border-4 border-transparent hover:border-blue-500'>
+          <div className='flex flex-row justify-between'>
+            <h1 className='text-left '>Monthy Expenses</h1>
+            <h1 className='text-right'>Due Date</h1>
+            </div>
+            <ul>
+              {recurringTransactionFilter.map((item) =>(
+                <div key={item._id} className='flex group flex-row justify-between text-base border-b p-2 hover:bg-gray-900 hover:bg-opacity-50 relative'>
+                  <li className='text-green-400 line-clamp-1'>{item.expensename}</li>
+                  <li className='text-red-400'>{item.amount}</li>
+                  <li>{ConvertToPHDate(item.expenseDate)}</li>
+                  <div className='absolute hidden group-hover:flex items-center justify-end top-0 right-10 left-0 bottom-0 bg-gradient-to-r from-gray-500 to-gray-600 w-full h-full pr-5 gap-10'>
+                    <button className='rounded-sm bg-red-600 px-10 py-1 hover:bg-red-700' onClick={() => handleDeleteModalClick(item._id, item.expensename)}>Delete</button>
+                    {isDeleteModalVisible && <Delete 
+                    isVisible={isDeleteModalVisible} 
+                    onCancel={() => setIsDeleteModalVisible(false)}
+                    id={selectedExpenseId}
+                    name={selectedExpenseName}
+                    />}
+                    <button className='rounded-sm bg-green-600 px-10 py-1 hover:bg-green-700' onClick={() => handleEditModalClick(item._id, item.expensename, item.amount, item.category)}>Edit</button>
+                    {isEditmodalVisible && 
+                    <Update 
+                    onCancel={() => setIsEditModalVisible(false)}
+                    id={selectedExpenseId}
+                    name={selectedExpenseName}
+                    />}
+                  </div>
+                </div>
+              ))}
+            </ul> 
         </div>
         <div className='bg-gradient-to-br from-green-600 to-green-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-9 col-span-3 mr-16 mb-2 border-4 border-transparent hover:border-red-500'>
             <h1 className='text-center font-bold'><FontAwesomeIcon icon={ faSave } className='mr-2' />Saving and Debt Repayment</h1>
