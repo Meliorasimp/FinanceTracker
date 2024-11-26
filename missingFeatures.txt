@@ -1,0 +1,9 @@
+Features to be Added:
+ 1. User authentication using JSON Webtoken
+ 2. Full Page Analytics per day
+ 3. Filter per category
+ 4. Ability to Logout from the application
+ 5. Monthly Expense should only be Deducted from the users income or budget when the due date is reached
+
+Bugs or Errors
+ 1. When the User Adds an Income, the Income is not added to the total income but rather to the whole data in the second chart
