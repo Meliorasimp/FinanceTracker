@@ -83,3 +83,4 @@ export const ConvertToPHDate = (date = new Date()) => {
   const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(date).toLocaleDateString('en-PH', options);
 };
+

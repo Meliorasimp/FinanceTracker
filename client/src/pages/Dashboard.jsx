@@ -46,8 +46,6 @@ function Navbar() {
     setIsAddIncomeVisible(!isAddIncomeVisible);
   }
 
-  const testArray = [1,2,3,4,5];
-
   const handlePageClick = (data) => {
     setCurrentPage(data.selected);
   }
@@ -132,7 +130,7 @@ function Navbar() {
                 
               </li>
               <li className="mb-4">
-                <a href="/" className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 flex flex-row gap-2 items-center"><ChartArea size={36}/>Full Analytics</a>
+                <a href="/analytics" className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 flex flex-row gap-2 items-center"><ChartArea size={36}/>Full Analytics</a>
               </li>
               <li className="mb-4">
                 <a onClick={handleAddIncomeClick} className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 cursor-pointer flex flex-row items-center gap-2"><HandCoins size={36} />Add Income</a>
