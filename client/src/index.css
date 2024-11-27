@@ -17,6 +17,37 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.react-calendar {
+  width: 50%;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #1a202c;
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: center;
+  color: white; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5),
+              0 0 20px rgba(0, 0, 0, 0.5)
+}
+.react-calendar__navigation {
+  background-color: black;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.react-calendar__tile {
+  border: none;
+  border-radius: 0.5rem;
+  width: 10px;
+  height: 100px;
+  padding:1px;
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  color: white;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
