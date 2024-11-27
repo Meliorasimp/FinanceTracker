@@ -39,9 +39,6 @@ function Navbar() {
   const currentItems = recentTransactionFilter.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(recentTransactionFilter.length / itemsPerPage);
 
-  const today = new Date();
-  const currentHour = today.getHours();
-
   const handleAddIncomeClick = () => {
     setIsAddIncomeVisible(!isAddIncomeVisible);
   }
@@ -110,7 +107,7 @@ function Navbar() {
 
 
   return (
-    <div className='bg-gradient-to-br from-gray-900 to-gray-800 overflow-page'>
+    <div className='bg-gray-900 overflow-page'>
       <aside>
         <nav className="fixed bg-slate-700 text-white max-h-screen w-40 top-20 p-4">
           <div className="flex flex-col items-center justify-between p-30">
@@ -165,8 +162,7 @@ function Navbar() {
             <h1 className='text-left text-base p-0 m-0 box-border'>Recent Transactions</h1>
             <div className='flex justify-between items-center p-2'></div>
             <ul>
-              
-              {currentItems.map((item) => (
+              {recentTransactionFilter.map((item) => (
                 <div key={item._id} className='flex group flex-row justify-between text-base border-b p-2 hover:bg-gray-900 hover:bg-opacity-50 relative'>
                   <li className='text-green-400 line-clamp-1' >{truncateText(item.expensename, 15)}</li>
                   <li className='text-red-400 '>-{item.amount}</li>
@@ -205,7 +201,7 @@ function Navbar() {
             subContainerClassName={'text-white'}
             activeClassName={'active text-blue-100 font-bold'}
           />
-        </div>
+          </div>
         </div>
         <div className='bg-gradient-to-br from-gray-600 to-gray-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-6 col-span-3 mb-2 border-4 border-transparent hover:border-blue-500'>
           <div className='flex flex-row justify-between'>

@@ -12,13 +12,13 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full bg-gray-800 p-4 z-50">
+      <nav className="fixed top-0 left-0 w-full bg-black p-4 z-50">
         <div className="flex justify-between items-center">
           <div className="text-white text-xl font-extrabold">
             <a href="/">ZETA FT</a>
           </div>
           <ul className='flex flex-row text-white text-xl font-extrabold space-x-6 pr-5'>
-            {location.pathname !== '/dashboard' && (
+            {location.pathname !== '/dashboard' && location.pathname !== '/analytics' && (
               <>
                 <li><Link to='/register'>Register</Link></li>
                 <li><Link to='/login'>Login</Link></li>
@@ -26,6 +26,10 @@ const Navbar = () => {
             )}
             {location.pathname === '/dashboard' && (
               <li><a href="#" onClick={handleAboutClick}>About</a></li>
+            )}
+
+            {location.pathname ==='/analytics' && (
+              <li>Analytics</li>
             )}
           </ul>
         </div>
