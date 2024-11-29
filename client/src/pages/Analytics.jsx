@@ -1,5 +1,6 @@
 import React from 'react'
 import Calendar from 'react-calendar';
+import { useExpenseStore, useIncomeStore } from '../store';
 import '../index.css';
 import '../overflow.css';
 
