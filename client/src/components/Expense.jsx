@@ -23,6 +23,12 @@ const ExpenseModal = ({ onClose }) => {
 
   const handleExpenseSubmit = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem('token');
+    if(!token) {
+      throw new Error('Token not found');
+    }
+    
     try {
       console.log('Submitting expense...');
       const response = await axios.post('http://localhost:3000/dashboard/expense', 
@@ -34,9 +40,12 @@ const ExpenseModal = ({ onClose }) => {
         },{
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
+      
+
       const newexpensedata = response.data.newexpense;
       if(response.status === 201) {
         console.log('New Expense:', newexpensedata);

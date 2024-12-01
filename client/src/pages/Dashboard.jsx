@@ -97,7 +97,7 @@ function Navbar() {
         setUserData(JSON.parse(userdata)); 
        }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching user data:', error);
       }
     }
     fetchUserData();
