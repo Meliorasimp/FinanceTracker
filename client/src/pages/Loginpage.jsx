@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 
 const Loginpage = () => {
   const [useremail, setUseremail] = useState('');
@@ -25,11 +25,12 @@ const Loginpage = () => {
         console.log('Token:', token);
         console.log('Decoded token:', decodedtoken);
 
-        // Store the token and user data
         localStorage.setItem('userinfo', JSON.stringify(userdata));
         localStorage.setItem('token', token);
 
-        // Redirect the user
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        // Redirect the user to the dashboard
         navigate('/dashboard');
       } else {
         console.error('Unexpected response status:', response.status);
