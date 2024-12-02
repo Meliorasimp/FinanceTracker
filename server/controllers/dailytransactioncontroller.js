@@ -1,70 +1,41 @@
-
-import dailyTransactionModel from "../model/dailytransactionmodel";
+import mongoose from 'mongoose';
+import dailyTransactionModel from "../model/dailytransactionmodel.js";
 
 export const createDailyTransaction = async (req, res) => {
-    const { date, totalexpense, totalincome, transactionType } = req.body;
-    const user = req.body.user;
+    const { date, totalexpense, totalincome, totalhousingexpenses, totaltranspoexpenses, totalfoodexpenses, totalsavingsexpenses, user } = req.body;
+
+    if (!date || !user) {
+        return res.status(400).json({ message: 'Date and user are required fields.' });
+    }
+
+    if (typeof totalexpense !== 'number' || typeof totalincome !== 'number') {
+        return res.status(400).json({ message: 'Total expense and total income must be numbers.' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(user)) {
+        return res.status(400).json({ message: 'Invalid user ID format.' });
+    }
 
     try {
-        const DailyTransaction = new dailyTransactionModel({
+        const userId = new mongoose.Types.ObjectId(user); // Convert user to ObjectId
+        const dailyTransaction = new dailyTransactionModel({
             date,
             totalexpense,
             totalincome,
-            transactionType,
-            user,
+            totalhousingexpenses,
+            totaltranspoexpenses,
+            totalfoodexpenses,
+            totalsavingsexpenses,
+            user: userId,
         });
 
-        await DailyTransaction.save();
+        await dailyTransaction.save();
 
-        res.status(201).json(DailyTransaction);
-    }
-
-    catch (error) {
-        res.status(409).json({ message: error.message });
+        res.status(201).json({
+            message: 'Daily transaction created successfully.',
+            dailyTransaction,
+        });
+    } catch (error) {
+        res.status(500).json({ message: `Server error: ${error.message}` });
     }
 };
-
-export const getWeeklyExpenses = async (req, res) => {
-    const user = req.body.user;
-    today = new Date();
-    const startOfWeek = getStartOfWeek(today);
-    const endOfWeek = getEndOfWeek(today);
-
-    try {
-        const weeklyTransaction = await dailyTransactionModel.aggregate([
-            { $match: {user: user, date: { $gte: startOfWeek, $lte: endOfWeek }}},
-            { $match: {transactionType: { $in: ['Housing and Utilities']}}},
-            { $group: {
-                _id: '$transactionType',
-                totalExpenses: { $sum: '$totalexpense' },
-                totalRemainingIncome: { $sum: '$totalincome' }
-            }},
-            { $sort: { _id: 1 }}
-        ])
-
-        const result = weeklyTransaction.length > 0 ? weeklyTransaction : [{ _id: 'No Data', totalExpenses: 0, totalRemainingIncome: 0 }];
-        res.status(200).json(result);
-    }
-
-    catch (error) {
-        res.status(404).json({ message: error.message });
-    }
-}
-
-const getStartOfWeek = (date) => {
-    const start = new Date(date);
-    const day = start.getDay();
-    const diff = start.getDate() - day + (day === 0 ? -6 : 1);
-    start.getDate(diff);
-    start.getHours(0, 0, 0, 0);
-    return start;
-}
-
-const getEndOfWeek = (date) => {
-    const end = new Date(date);
-    const day = end.getDay();
-    const diff = end.getDate() + (7 - day);
-    end.setDate(diff);
-    end.setHours(23, 59, 59, 999);
-    return end;
-}

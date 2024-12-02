@@ -1,6 +1,7 @@
 import userrouter from './routes/userroutes.js';
 import expenserouter from './routes/expenseroutes.js';
 import incomerouter from './routes/incomeroutes.js';
+import analyticsrouter from './routes/analyticsroute.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(cors());
 app.use('/api/user', userrouter);
 app.use('/dashboard/expense', expenserouter);
 app.use('/dashboard/income', incomerouter);
+app.use('/analytics', analyticsrouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

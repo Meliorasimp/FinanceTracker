@@ -16,8 +16,23 @@ const dailyTransactionSchema = new mongoose.Schema({
         required: true,
     },
 
-    transactionType: {
-        type: String,
+    totalhousingexpenses: {
+        type: Number,
+        required: true,
+    },
+
+    totaltranspoexpenses: {
+        type: Number,
+        required: true,
+    },
+
+    totalfoodexpenses: {
+        type: Number,
+        required: true,
+    },
+
+    totalsavingsexpenses: {
+        type: Number,
         required: true,
     },
 
