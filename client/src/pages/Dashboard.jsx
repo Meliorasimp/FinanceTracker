@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { truncateText, ConvertToPHDate } from '../Services/MainService';
+import { truncateText, CalculateTotalExpense, CalculateTotalIncome, calculateNetIncome, CalculateHousingCategory, CalculateFoodCategory, CalculateTransportationCategory, CalculateSavingCategory } from '../Services/MainService';
 import ReactPaginate from 'react-paginate';
 import '../bg-backgroundimage.css'; 
 import '../overflow.css';
@@ -28,11 +28,19 @@ function Navbar() {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   const date = new Date();
- 
-  console.log('Date:', date.getDate());
+  const hours = date.getHours();
+  const daytoday = date.getDate();
 
   const recurringTransactionFilter = expenses.filter((item) => item.category === 'Recurring Transactions');
   const recentTransactionFilter = expenses.filter((item) => item.category !== 'Recurring Transactions');
+
+  const totalExpenses = CalculateTotalExpense(expenses);
+  const totalIncome = CalculateTotalIncome(incomes);
+  const totalNetIncome = calculateNetIncome(totalIncome, totalExpenses);
+  const totalhousingandutilities = CalculateHousingCategory(expenses);
+  const totalfoodandgroceries = CalculateFoodCategory(expenses);
+  const totaltransportation = CalculateTransportationCategory(expenses);
+  const totalsavings = CalculateSavingCategory(expenses);
 
   const itemsPerPage = 5;
   const offset = currentPage * itemsPerPage;
@@ -83,6 +91,8 @@ function Navbar() {
     const fetchIncomeData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/dashboard/income');
+        console.log('Hours:', hours);
+        console.log('Day:', daytoday);
         setIncome(response.data.income);
       }
       catch (error) {
@@ -100,14 +110,37 @@ function Navbar() {
         console.error('Error fetching user data:', error);
       }
     }
+    const dataToAnalytics = async () => {
+      try {
+            const response = await axios.post('http://localhost:3000/analytics', {
+                date: date,
+                totalexpense: totalExpenses,
+                totalincome: totalNetIncome,
+                totalhousingexpenses: totalhousingandutilities,
+                totaltranspoexpenses: totaltransportation,
+                totalfoodexpenses: totalfoodandgroceries,
+                totalsavingsexpenses: totalsavings,
+            });
+
+            if (response.status === 201) {
+              console.log('Data sent to analytics:', response.data);
+          } else {
+              console.error('Unexpected response status:', response.status);
+          }
+      } catch (error) {
+          console.error('Error sending analytics data:', error);
+      }
+  };
+
     fetchUserData();
     fetchExpenses();
     fetchIncomeData();
+    dataToAnalytics();
   }, [setExpense]); 
 
 
   return (
-    <div className='bg-gray-900 overflow-page'>
+    <div className='bg-gray-800 overflow-page'>
       <aside>
         <nav className="fixed bg-slate-700 text-white max-h-screen w-40 top-20 p-4">
           <div className="flex flex-col items-center justify-between p-30">
@@ -236,7 +269,12 @@ function Navbar() {
         </div>
         <div className='bg-gradient-to-br from-green-600 to-green-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-9 col-span-3 mr-16 mb-2 border-4 border-transparent hover:border-red-500'>
         <h1 className="text-center font-bold">Saving and Debt Repayment</h1>
-            
+            {totalExpenses} <br />
+            {totalNetIncome} <br />
+            {totalsavings} <br />
+            {totalhousingandutilities} <br />
+            {totalfoodandgroceries} <br />
+            {totaltransportation} <br />
         </div>
       </div>
     </div>

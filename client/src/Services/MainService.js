@@ -75,12 +75,24 @@ export const SubtractExpenseFromIncome = (totalIncome, expenses) => {
     result.push(currentValue);
     previousValue = currentValue; 
   }
-
   return result;
 };
+
+export const calculateNetIncome = (totalIncome, totalExpense) => {
+  return totalIncome - totalExpense;
+}
 
 export const ConvertToPHDate = (date = new Date()) => {
   const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(date).toLocaleDateString('en-PH', options);
 };
 
+export const getDaysInMonth = (month, year) => {
+  const date = new Date(year, month, 1);
+  const days = [];
+  while (date.getMonth() === month) {
+    days.push(new Date(date));
+    date.setDate(date.getDate() + 1);
+  }
+  return days;
+}
