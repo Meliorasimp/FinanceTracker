@@ -16,7 +16,7 @@ const dailyTransactionSchema = new mongoose.Schema({
         required: true,
     },
 
-    category: {
+    transactionType: {
         type: String,
         required: true,
     },
