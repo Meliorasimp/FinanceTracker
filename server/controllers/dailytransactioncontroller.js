@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dailyTransactionModel from "../model/dailytransactionmodel.js";
+import expenseModel from "../model/expensemodel.js";
 
 export const createDailyTransaction = async (req, res) => {
     const { date, totalexpense, totalincome, totalhousingexpenses, totaltranspoexpenses, totalfoodexpenses, totalsavingsexpenses, user } = req.body;
@@ -39,3 +40,26 @@ export const createDailyTransaction = async (req, res) => {
         res.status(500).json({ message: `Server error: ${error.message}` });
     }
 };
+
+export const deleteAllTransaction = async (req, res) => {
+const userID = req.params.id;
+
+    try {
+        const result = await expenseModel.deleteMany({ user: userID });
+        res.status(200).json({ message: 'All transactions deleted successfully.', result });
+    }
+    catch (error) {
+        res.status(500).json({ message: `Server error: ${error.message}` });
+    }
+}
+
+export const getDailyTransaction = async (req, res) => {
+    const userID = req.params.id;
+
+    try {
+        const dailyTransaction = await dailyTransactionModel.find({ user: userID });
+        res.status(200).json({ dailyTransaction });
+    } catch (error) {
+        res.status(500).json({ message: `Server error: ${error.message}` });
+    }   
+}

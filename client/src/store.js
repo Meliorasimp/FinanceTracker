@@ -21,6 +21,7 @@ export const useExpenseStore = create((set) => ({
   filterbyCategory: (category) => set((state) => ({
     expenses: state.expenses.filter((expense) => expense.category === category),
   })),
+  deleteAllExpenses: () => set({ expenses: [] }), // Delete all expenses
 }));
 
 export const useIncomeStore = create((set) => ({

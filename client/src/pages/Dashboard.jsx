@@ -23,16 +23,13 @@ function Navbar() {
   const [userdata, setUserData] = React.useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = React.useState(null);
   const [selectedExpenseName, setSelectedExpenseName] = React.useState(null);
-  const { expenses, setExpense } = useExpenseStore();
+    const { expenses, setExpense, deleteAllExpenses } = useExpenseStore();
   const { setIncome, incomes } = useIncomeStore();
   const [currentPage, setCurrentPage] = React.useState(1);
 
   const date = new Date();
   const hours = date.getHours();
   const daytoday = date.getDate();
-
-  const recurringTransactionFilter = expenses.filter((item) => item.category === 'Recurring Transactions');
-  const recentTransactionFilter = expenses.filter((item) => item.category !== 'Recurring Transactions');
 
   const totalExpenses = CalculateTotalExpense(expenses);
   const totalIncome = CalculateTotalIncome(incomes);
@@ -41,6 +38,9 @@ function Navbar() {
   const totalfoodandgroceries = CalculateFoodCategory(expenses);
   const totaltransportation = CalculateTransportationCategory(expenses);
   const totalsavings = CalculateSavingCategory(expenses);
+
+  const recurringTransactionFilter = expenses.filter((item) => item.category === 'Recurring Transactions');
+  const recentTransactionFilter = expenses.filter((item) => item.category !== 'Recurring Transactions');
 
   const itemsPerPage = 5;
   const offset = currentPage * itemsPerPage;
@@ -75,13 +75,43 @@ function Navbar() {
     return new Date(date).toLocaleDateString('en-PH', options);
   }
 
+  const dataToAnalytics = async () => {
+    if (hours === 10) {
+
+      const user = { _id: "674c7e81b8fd3d75546c527e", 
+                      name: "Reika Kalseki", 
+                      email: "reikakalseki@gmail.com" };
+      try {
+            const response = await axios.post('http://localhost:3000/analytics', {
+                date: date,
+                totalexpense: totalExpenses,
+                totalincome: totalNetIncome,
+                totalhousingexpenses: totalhousingandutilities,
+                totaltranspoexpenses: totaltransportation,
+                totalfoodexpenses: totalfoodandgroceries,
+                totalsavingsexpenses: totalsavings,
+                user: user._id
+            });
+
+            if (response.status === 201) {          
+              const respo = await axios.delete(`http://localhost:3000/dashboard/expense/all/${user._id}`); 
+              console.log('Deleted data:', respo.data);
+              deleteAllExpenses();
+          } else {
+              console.error('Unexpected response status:', response.status);
+          }
+      } catch (error) {
+          console.error('Error sending analytics data:', error);
+      }
+    }
+  };
+
   useEffect(() => { 
   
     const fetchExpenses = async () => {
       try {
         const response = await axios.get('http://localhost:3000/dashboard/expense');
         setExpense(response.data);
-        console.log('Expenses:', response.data);
       }
       catch (error) {
         console.error('Error:', error);
@@ -105,38 +135,18 @@ function Navbar() {
         const userdata = localStorage.getItem('userinfo'); 
         if (userdata) { 
         setUserData(JSON.parse(userdata)); 
+        console.log('User data:', JSON.parse(userdata));
        }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     }
-    const dataToAnalytics = async () => {
-      try {
-            const response = await axios.post('http://localhost:3000/analytics', {
-                date: date,
-                totalexpense: totalExpenses,
-                totalincome: totalNetIncome,
-                totalhousingexpenses: totalhousingandutilities,
-                totaltranspoexpenses: totaltransportation,
-                totalfoodexpenses: totalfoodandgroceries,
-                totalsavingsexpenses: totalsavings,
-            });
-
-            if (response.status === 201) {
-              console.log('Data sent to analytics:', response.data);
-          } else {
-              console.error('Unexpected response status:', response.status);
-          }
-      } catch (error) {
-          console.error('Error sending analytics data:', error);
-      }
-  };
 
     fetchUserData();
     fetchExpenses();
     fetchIncomeData();
     dataToAnalytics();
-  }, [setExpense]); 
+  }, []); 
 
 
   return (
@@ -169,7 +179,7 @@ function Navbar() {
                 }
               </li>
               <li className="mb-4">
-                <a href="/logout" className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 flex flex-row gap-2 items-center"><LogOut size={32} />Logout</a>
+                <a className="py-2 px-2 rounded hover:bg-slate-600 text-yellow-300 flex flex-row gap-2 items-center"><LogOut size={32} />Logout</a>
               </li>
             </ul>
           </div>
