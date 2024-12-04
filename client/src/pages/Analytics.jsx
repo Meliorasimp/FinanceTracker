@@ -9,27 +9,29 @@ const Analytics = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [daysInMonths, setDaysInMonths] = useState([]);
   const [dailyTransactions, setDailyTransactions] = useState([]);
+  const [itemToDisplay, setItemToDisplay] = useState([]);
 
   const date = new Date();
   const year = date.getFullYear();
+
   const userID = '674c7e81b8fd3d75546c527e'; // Replace with the actual user ID
 
   const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
   const monthStrings = months.map((item) => item.toLocaleString('default', { month: 'long' }));
 
-  const fetchTransactions = async (date) => {
+  const fetchTransactions = async () => {
     try {
-      const formattedDate = new Date(date).toISOString().split('T')[0]; 
       const response = await axios.get(`http://localhost:3000/analytics/${userID}`);
 
       setDailyTransactions(response.data.dailyTransaction);
-      console.log('Fetched Data:', response.data.dailyTransaction.date);
+
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
   };
 
   useEffect(() => {
+
     fetchTransactions(date);
   }, [userID]);
 
@@ -48,8 +50,21 @@ const Analytics = () => {
       const selected = new Date(year, selectedMonth, day);
       const formattedDate = selected.toISOString().split('T')[0];
       setSelectedDate(formattedDate);
-      const date = new Date(formattedDate);
-      console.log('Selected Date:', date);
+      console.log('Selected Date:', formattedDate);
+
+      const filteredTransactions = dailyTransactions.filter((item) => {
+        const rawDate = new Date(item.date);
+        const formattedRawDate = rawDate.toISOString().split('T')[0];
+        return formattedRawDate === formattedDate;
+      });
+
+      if (filteredTransactions.length > 0) {
+        setItemToDisplay(filteredTransactions);
+        console.log('Displaying Items:', filteredTransactions);
+      } else {
+        setItemToDisplay([]);
+        console.log('No transactions found for the selected date.');
+      }
     };
 
   return (
@@ -89,7 +104,31 @@ const Analytics = () => {
           )}
         </div>
         <div className='mt-16'>
-          
+          <h1 className='text-base mb-2'>Total Expenses Made This Day:</h1>
+          {itemToDisplay.length > 0 ? ( 
+            itemToDisplay.map((transaction, index) => ( 
+            <div key={index}> 
+            <h1 className='text-base font-bold mb-2 border-b-2 w-96'>Total Expenses: {transaction.totalexpense}</h1> 
+            </div> )) ) : ( <p className='text-base font-bold mb-2 border-b-2 w-96'>No transaction data found!</p> )}
+          <h1 className='text-base mb-2'>Total Expenses per Category:</h1>
+          {itemToDisplay.length > 0 ? (
+            itemToDisplay.map((transaction, index) => (
+              <div key={index}>
+                <h1 className='text-base font-bold mb-2'>Foods and Groceries: {transaction.totalfoodexpenses}</h1>
+                <h1 className='text-base font-bold mb-2'>Housing and Utilities: {transaction.totalhousingexpenses}</h1>
+                <h1 className='text-base font-bold mb-2'>Saving and Debt: {transaction.totalsavingsexpenses}</h1>
+                <h1 className='text-base font-bold mb-2 border-b-2 w-96'>Transportation: {transaction.totaltranspoexpenses}</h1>
+              </div>
+            ))
+          ) : (<h1 className='text-base font-bold mb-2 border-b-2 w-96'>No Expenses Found!</h1>)}
+          <h1>Remaining Income:</h1>
+          {itemToDisplay.length > 0 ? (
+            itemToDisplay.map((transaction, index) => (
+              <div key={index}>
+                <h1 className='text-base font-bold mb-2 border-b-2 w-96'>Net Income: {transaction.totalincome}</h1>
+              </div>
+            ))
+          ) : (<h1 className='text-base font-bold mb-2 border-b-2 w-96'>No Remaining Income Found!</h1>)}
         </div>
       </div>
     </div>

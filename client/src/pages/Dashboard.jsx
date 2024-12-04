@@ -29,6 +29,12 @@ function Navbar() {
 
   const date = new Date();
   const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  console.log('Hours:', hours);
+  console.log('Minutes:', minutes);
+  console.log('Seconds:', seconds);
   const daytoday = date.getDate();
 
   const totalExpenses = CalculateTotalExpense(expenses);
@@ -76,7 +82,7 @@ function Navbar() {
   }
 
   const dataToAnalytics = async () => {
-    if (hours === 10) {
+    if (hours === 0 && minutes === 0 && seconds === 0) {
 
       const user = { _id: "674c7e81b8fd3d75546c527e", 
                       name: "Reika Kalseki", 
@@ -93,9 +99,14 @@ function Navbar() {
                 user: user._id
             });
 
-            if (response.status === 201) {          
+            if (response.status === 201) {
+
+              localStorage.setItem('remainingIncome', totalNetIncome);
+
               const respo = await axios.delete(`http://localhost:3000/dashboard/expense/all/${user._id}`); 
+              const respo2 = await axios.delete(`http://localhost:3000/dashboard/income/all/${user._id}`);
               console.log('Deleted data:', respo.data);
+              console.log('Deleted data:', respo2.data);
               deleteAllExpenses();
           } else {
               console.error('Unexpected response status:', response.status);
@@ -238,7 +249,7 @@ function Navbar() {
             breakClassName={'page-link text-gray-500 hover:text-blue-500'}
             pageCount={pageCount}
             marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
+            pageRangeDisplayed={itemsPerPage}
             onPageChange={handlePageClick}
             containerClassName={'pagination flex justify-center items-center gap-2 text-base rounded-lg -mt-2'}  
             subContainerClassName={'text-white'}
