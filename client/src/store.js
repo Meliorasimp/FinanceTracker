@@ -41,4 +41,5 @@ export const useIncomeStore = create((set) => ({
       return income;
     }),
   })),
+  deleteAllIncomes: () => set({ incomes: [] }), // Delete all incom
 }));

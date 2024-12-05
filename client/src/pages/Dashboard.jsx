@@ -10,6 +10,7 @@ import Delete from '../components/Delete';
 import Update from '../components/Update';
 import DataSets from '../components/DataSets';
 import Income from '../components/Income';
+import Pagination from '../components/Pagination';
 import DataSetsTwo from '../components/DataSetsTwo';
 import { Plus, ChartArea, HandCoins, LogOut } from 'lucide-react';
 
@@ -23,7 +24,7 @@ function Navbar() {
   const [userdata, setUserData] = React.useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = React.useState(null);
   const [selectedExpenseName, setSelectedExpenseName] = React.useState(null);
-    const { expenses, setExpense, deleteAllExpenses } = useExpenseStore();
+  const { expenses, setExpense, deleteAllExpenses, deleteAllIncomes } = useExpenseStore();
   const { setIncome, incomes } = useIncomeStore();
   const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -48,17 +49,14 @@ function Navbar() {
   const recurringTransactionFilter = expenses.filter((item) => item.category === 'Recurring Transactions');
   const recentTransactionFilter = expenses.filter((item) => item.category !== 'Recurring Transactions');
 
-  const itemsPerPage = 5;
-  const offset = currentPage * itemsPerPage;
-  const currentItems = recentTransactionFilter.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(recentTransactionFilter.length / itemsPerPage);
+  const postsPerPage = 5;
+  const lastPostIndex = currentPage * postsPerPage;
+  const firstPostIndex = lastPostIndex - postsPerPage;
+  const currentPosts = recentTransactionFilter.slice(firstPostIndex, lastPostIndex);
+
 
   const handleAddIncomeClick = () => {
     setIsAddIncomeVisible(!isAddIncomeVisible);
-  }
-
-  const handlePageClick = (data) => {
-    setCurrentPage(data.selected);
   }
 
   const handleExpenseclick = () => {
@@ -108,6 +106,7 @@ function Navbar() {
               console.log('Deleted data:', respo.data);
               console.log('Deleted data:', respo2.data);
               deleteAllExpenses();
+              deleteAllIncomes();
           } else {
               console.error('Unexpected response status:', response.status);
           }
@@ -216,7 +215,7 @@ function Navbar() {
             <h1 className='text-left text-base p-0 m-0 box-border'>Recent Transactions</h1>
             <div className='flex justify-between items-center p-2'></div>
             <ul>
-              {recentTransactionFilter.map((item) => (
+              {currentPosts.map((item) => (
                 <div key={item._id} className='flex group flex-row justify-between text-base border-b p-2 hover:bg-gray-900 hover:bg-opacity-50 relative'>
                   <li className='text-green-400 line-clamp-1' >{truncateText(item.expensename, 15)}</li>
                   <li className='text-red-400 '>-{item.amount}</li>
@@ -241,21 +240,14 @@ function Navbar() {
                 </div>
               ))}
             </ul>
-            <div className="flex justify-center mt-4">
-          <ReactPaginate
-            previousLabel={'Prev'}
-            nextLabel={'Next'}
-            breakLabel={'...'}
-            breakClassName={'page-link text-gray-500 hover:text-blue-500'}
-            pageCount={pageCount}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={itemsPerPage}
-            onPageChange={handlePageClick}
-            containerClassName={'pagination flex justify-center items-center gap-2 text-base rounded-lg -mt-2'}  
-            subContainerClassName={'text-white'}
-            activeClassName={'active text-blue-100 font-bold'}
-          />
-          </div>
+            <div>
+              <Pagination
+              postsPerPage={postsPerPage}
+              totalPosts={recentTransactionFilter.length}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+               />
+            </div>
         </div>
         <div className='bg-gradient-to-br from-gray-600 to-gray-700 p-2 pt-2 rounded shadow-xl row-start-8 row-span-9 col-start-6 col-span-3 mb-2 border-4 border-transparent hover:border-blue-500'>
           <div className='flex flex-row justify-between'>
