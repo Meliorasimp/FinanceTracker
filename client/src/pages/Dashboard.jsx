@@ -80,7 +80,7 @@ function Navbar() {
   }
 
   const dataToAnalytics = async () => {
-    if (hours === 0 && minutes === 0 && seconds === 0) {
+    if (hours === 10) {
 
       const user = { _id: "674c7e81b8fd3d75546c527e", 
                       name: "Reika Kalseki", 
