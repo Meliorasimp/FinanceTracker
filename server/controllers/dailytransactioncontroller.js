@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import dailyTransactionModel from "../model/dailytransactionmodel.js";
 import expenseModel from "../model/expensemodel.js";
+import incomeModel from "../model/incomemodel.js";
 
 export const createDailyTransaction = async (req, res) => {
     const { date, totalexpense, totalincome, totalhousingexpenses, totaltranspoexpenses, totalfoodexpenses, totalsavingsexpenses, user } = req.body;
@@ -52,6 +53,19 @@ const userID = req.params.id;
         res.status(500).json({ message: `Server error: ${error.message}` });
     }
 }
+
+export const deleteAllIncomes = async (req, res) => {
+    const userID = req.params.id;
+
+        try {
+            const result = await incomeModel.deleteMany({ user: userID, type: 'income' });
+            res.status(200).json({ message: 'All incomes deleted successfully.', result });
+        }
+        catch (error) {
+            res.status(500).json({ message: `Server error: ${error.message}` });
+        }
+    }
+
 
 export const getDailyTransaction = async (req, res) => {
     const userID = req.params.id;
